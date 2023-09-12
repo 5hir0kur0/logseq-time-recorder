@@ -197,7 +197,12 @@ function parseTimeRecords(inputStrings: string[]): TimeRecords {
       }
       pending = parseTimeOfDay(parts[0]);
     } else {
-      timeSlots.push([parseTimeOfDay(parts[0]), parseTimeOfDay(parts[1])]);
+      const start = parseTimeOfDay(parts[0]);
+      const end = parseTimeOfDay(parts[1]);
+      if (end.getTime() < start.getTime()) {
+        throw `End time is before start time: ${inputStr}.`
+      }
+      timeSlots.push([start, end]);
     }
   }
 
