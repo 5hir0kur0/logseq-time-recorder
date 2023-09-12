@@ -1,8 +1,8 @@
 import '@logseq/libs'
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user';
 
-const RENDERER_ID = ':time-recorder'
-const RENDERER_PATTERN = /\{\{renderer\s+:time-recorder\s*,\s*([^}]*)\}\}/gm;
+const RENDERER_ID = ':time-recorder';
+const RENDERER_PATTERN = /\{\{renderer\s+:time-recorder\s*(?:,\s*([^}]*))?\}\}/gm;
 
 type TimeRecords = {
   timeSlots: Array<[Date, Date]>,
@@ -62,15 +62,15 @@ async function main() {
         logseq.UI.showMsg(`Error: ${error}`, 'error');
       }
     },
-  })
+  });
 
-  logseq.provideStyle(``)
+  logseq.provideStyle(``);
 
   logseq.Editor.registerSlashCommand('🕰️ Insert Time Recorder', async () => {
     await logseq.Editor.insertAtEditingCursor(
       `{{renderer ${RENDERER_ID}, ${currentTimeOfDay()}}} `,
     )
-  })
+  });
 
   function renderTimer({
     slot, blockUuid, timeRecords, init
@@ -108,6 +108,12 @@ async function main() {
       </table>
       `,
     });
+
+    // provideUI will fail if the user has deleted the block/text in the meantime.
+    // However, it just prints an error to the console and doesn't throw an exception.
+    // The return value also seems to be the same in the error case. Therefore, we
+    // cannot tell if it failed and renderTimer() will just continue to be called
+    // forever (until Logseq is restarted) :-/
 
     if (timeRecords.pending) {
       setTimeout(() => {
@@ -215,18 +221,15 @@ function parseTimeRecordsFromBlock(block: BlockEntity | null): TimeRecords {
     throw `Failed to parse block content: ${block?.content}`;
   }
   const matchesArray = [...matches];
-  if (matchesArray.length === 0) {
-    throw `No renderer found in: ${block?.content}`;
-  }
   if (matchesArray.length !== 1) {
-    throw `There must be at most one renderer in a block: ${block?.content}`;
+    throw `There must be exactly one renderer: ${block?.content}`;
   }
   const match = matchesArray[0];
   if (!match || match.length < 2) {
     throw `Invalid renderer syntax: ${block?.content}`;
   }
-  const args = match[1];
-  return parseTimeRecords(args.split(',').map(a => a.trim()));
+  const timeRecords = match[1]?.split(',').map(a => a.trim()) || [];
+  return parseTimeRecords(timeRecords);
 }
 
 function getMinutesBetween(start: Date, end: Date): number {
