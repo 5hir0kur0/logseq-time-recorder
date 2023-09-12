@@ -1,0 +1,22 @@
+{
+  "name": "logseq-time-recorder",
+  "version": "0.0.1",
+  "description": "A primitive time recorder (punch clock) plugin.",
+  "author": "5hir0kur0",
+  "license": "MIT",
+  "scripts": {
+    "dev": "parcel ./index.html --public-url ./",
+    "build": "parcel build --public-url . --no-source-maps index.html"
+  },
+  "devDependencies": {
+    "@logseq/libs": "^0.0.15",
+    "parcel": "^2.0.0"
+  },
+  "dependencies": {},
+  "logseq": {
+    "name": "Time Recorder",
+    "main": "dist/index.html",
+    "icon": "./logo.png",
+    "id": "_1vb2szddi"
+  }
+}
