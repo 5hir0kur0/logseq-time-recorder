@@ -251,9 +251,7 @@ function formatTime(timeInMinutes: number): string {
   if (timeInMinutes > minutesPerHour) {
     const hours = Math.floor(timeInMinutes / minutesPerHour);
     const minutes = timeInMinutes % minutesPerHour;
-    const minutesStr = minutes.toString().padStart(2, '0');
-    const hoursStr = hours.toString().padStart(2, '0');
-    return `${hoursStr}h ${minutesStr}m`
+    return `${hours}h ${minutes}m`
   }
   return `${timeInMinutes}m`
 }
