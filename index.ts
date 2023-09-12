@@ -64,21 +64,7 @@ async function main() {
     },
   })
 
-  // button from: https://getcssscan.com/css-buttons-examples
-  logseq.provideStyle(`
-    .time_recorder_button {
-      background-color: rgba(51, 51, 51, 0.05);
-      border-radius: 8px;
-      border-width: 0;
-      color: #333333;
-      display: inline-block;
-      font-weight: 500;
-      padding: 10px 12px;
-      text-align: center;
-      transition: all 200ms;
-      white-space: nowrap;
-    }
-  `)
+  logseq.provideStyle(``)
 
   logseq.Editor.registerSlashCommand('🕰️ Insert Time Recorder', async () => {
     await logseq.Editor.insertAtEditingCursor(
@@ -96,26 +82,38 @@ async function main() {
       slot,
       reset: init,
       template: `
-      <table>
-        <tr><th colspan="2" style="font-weight: bold; text-align: center; font-size: 1.1em;">Time Recorder</th></tr>
-        <tr><td>Time Slots:</td> <td>${formatTimeRecords(timeRecords)}</td></tr>
-        <tr><td>Total:</td> <td>${formatTotalTime(timeRecords)}</td></tr>
-        <tr><td colspan="2" style="text-align: center">
-          <button
-            class="time_recorder_button"
-            data-slot-id="${slot}" 
-            data-block-uuid="${blockUuid}"
-            data-on-click="${timeRecords.pending ? 'clockOut' : 'clockIn'}">
-            ${timeRecords.pending ? 'Clock OUT' : 'Clock IN'}
-          </button>
-        </td></tr>
+      <table style="white-space: normal;">
+        <tr>
+          <th colspan="2" style="text-align: center; font-size: 1.1em;">Time Recorder</th>
+        </tr>
+        <tr>
+          <td class="min-w-max">Time Slots:</td>
+          <td style="white-space: pre-wrap;">${formatTimeRecords(timeRecords)}</td>
+        </tr>
+        <tr>
+          <td class="min-w-max">Total:</td> <td>${formatTotalTime(timeRecords)}</td>
+        </tr>
+        <tr>
+          <td colspan="2" style="vertical-align: top;">
+            <div class="flex justify-center">
+              <button
+                class="ui__button bg-indigo-600 hover:bg-indigo-700 focus:border-indigo-700 active:bg-indigo-700 text-center text-sm p-2"
+                data-slot-id="${slot}" 
+                data-block-uuid="${blockUuid}" 
+                data-on-click="${timeRecords.pending ? 'clockOut' : 'clockIn'}">${timeRecords.pending ? 'Clock OUT' : 'Clock IN'}
+              </button>
+            </div>
+          </td>
+        </tr>
       </table>
       `,
     });
 
-    setTimeout(() => {
-      renderTimer({ slot, blockUuid, timeRecords, init: false })
-    }, 30 * 1000)
+    if (timeRecords.pending) {
+      setTimeout(() => {
+        renderTimer({ slot, blockUuid, timeRecords, init: false })
+      }, 30 * 1000)
+    }
   }
 
   logseq.App.onMacroRendererSlotted(({ slot, payload }) => {
@@ -147,7 +145,10 @@ function formatTimeOfDay(time: Date): string {
 function formatTimeRecords(timeRecords: TimeRecords): string {
   let result = timeRecords.timeSlots.map((times) => `${formatTimeOfDay(times[0])} - ${formatTimeOfDay(times[1])}`).join(',  ');
   if (timeRecords.pending) {
-    result = `${result}, ${formatTimeOfDay(timeRecords.pending)} -`
+    if (result) {
+      result = `${result}, `
+    }
+    result = `${result}${formatTimeOfDay(timeRecords.pending)} -`
   }
   return result;
 }
