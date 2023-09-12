@@ -18,6 +18,8 @@ Logseq has a built-in functionality to track the time spent on a `TODO` block. H
 - Ideally I would like this to integrate with the built-in `:LOGBOOK:` syntax that is used for `TODO` blocks, but I don't know how to this with a plugin. It would be even better if Logseq just provided some UI for editing the `:LOGBOOK:`, then this plugin would be obsolete.
 - Maybe make it work across days (currently it only records HH:MM timestamps).
 
+I am not a web developer. If you know how to make the code nicer or the UI prettier, please submit a PR :-)
+
 ## Building and Running the Plugin
 
 - `yarn && yarn build` in terminal to install dependencies.
