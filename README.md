@@ -5,7 +5,7 @@ Logseq has a built-in functionality to track the time spent on a `TODO` block. H
 
 ## Demo
 
-TODO: Add demo
+![Demo GIF](https://github.com/5hir0kur0/logseq-time-recorder/assets/12101162/ac7ff04e-dda5-4c71-ae22-667945946a40)
 
 ## Features
 
