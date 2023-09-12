@@ -1,7 +1,7 @@
 # Logseq Time Recorder
 
 This plugin can be used for tracking working hours.
-Logseq has a built-in functionality to track the time spent on a `TODO` block. However, it is not possible to edit this information (e.g., if you forgot to change the state from `TODO` to `DOING` when you started working on a task).
+Logseq has a built-in feature to track the time spent `DOING` a `TODO` block. However, it is not possible to edit this information (e.g., if you forgot to change the state from `TODO` to `DOING` when you started working on a task).
 
 ## Demo
 
@@ -12,7 +12,7 @@ Logseq has a built-in functionality to track the time spent on a `TODO` block. H
 
 - Track your working hours during a workday.
 - Button to clock in and clock out.
-- Times are also manually editable.
+- The recorded times are also manually editable.
 
 ## Future Goals
 
@@ -28,5 +28,5 @@ I am not a web developer. If you know how to make the code nicer or the UI prett
 
 ## Thanks
 
-- Icon: <a href="https://www.flaticon.com/free-icons/punch-clock" title="punch clock icons">Punch clock icons created by Freepik - Flaticon</a>
+- Logo: <a href="https://www.flaticon.com/free-icons/punch-clock" title="punch clock icons">Punch clock icons created by Freepik - Flaticon</a>
 - The code is heavily inspired by the `logseq-pomodoro-timer` from [logseq-plugin-samples](https://github.com/logseq/logseq-plugin-samples).
