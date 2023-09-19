@@ -1,4 +1,4 @@
-import '@logseq/libs'
+import '@logseq/libs';
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user';
 
 const RENDERER_ID = ':time-recorder';
@@ -31,7 +31,7 @@ async function main() {
           return;
         }
         await logseq.Editor.updateBlock(blockUuid, newContent);
-        renderTimer({ slot: slotId, timeRecords, blockUuid, init: false });
+        renderTimer({ slot: slotId, timeRecords, blockUuid});
       } catch (error) {
         logseq.UI.showMsg(`Error: ${error}`, 'error');
       }
@@ -57,7 +57,7 @@ async function main() {
           return;
         }
         await logseq.Editor.updateBlock(blockUuid, newContent);
-        renderTimer({ slot: slotId, timeRecords, blockUuid, init: false });
+        renderTimer({ slot: slotId, timeRecords, blockUuid});
       } catch (error) {
         logseq.UI.showMsg(`Error: ${error}`, 'error');
       }
@@ -73,14 +73,12 @@ async function main() {
   });
 
   function renderTimer({
-    slot, blockUuid, timeRecords, init
-  }: { slot: string, blockUuid: string, timeRecords: TimeRecords, init: boolean }) {
-    const key = timerUiKey(blockUuid);
+    slot, blockUuid, timeRecords
+  }: { slot: string, blockUuid: string, timeRecords: TimeRecords}) {
 
     logseq.provideUI({
-      key,
       slot,
-      reset: init,
+      reset: true,
       template: `
       <table style="white-space: normal;">
         <tr>
@@ -117,7 +115,7 @@ async function main() {
 
     if (timeRecords.pending) {
       setTimeout(() => {
-        renderTimer({ slot, blockUuid, timeRecords, init: false })
+        renderTimer({ slot, blockUuid, timeRecords})
       }, 30 * 1000)
     }
   }
@@ -134,7 +132,6 @@ async function main() {
         blockUuid: payload.uuid,
         slot,
         timeRecords,
-        init: payload.arguments.length === 1
       });
     } catch (error) {
       logseq.UI.showMsg(`Error: ${error}`, 'error');
@@ -157,10 +154,6 @@ function formatTimeRecords(timeRecords: TimeRecords): string {
     result = `${result}${formatTimeOfDay(timeRecords.pending)} -`
   }
   return result;
-}
-
-function timerUiKey(uuid: string): string {
-  return `timer-ui-${uuid}`
 }
 
 function currentTimeOfDay(): string {
@@ -254,6 +247,9 @@ function formatTime(timeInMinutes: number): string {
   if (timeInMinutes > minutesPerHour) {
     const hours = Math.floor(timeInMinutes / minutesPerHour);
     const minutes = timeInMinutes % minutesPerHour;
+    if (minutes === 0) {
+      return `${hours}h`
+    }
     return `${hours}h ${minutes}m`
   }
   return `${timeInMinutes}m`
