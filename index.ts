@@ -1,8 +1,6 @@
 import '@logseq/libs';
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user';
 
-// TODO: detect if block becomes invalid and remove timeout maybe using one of these event handlers: https://github.com/logseq/plugins/issues/14#issuecomment-1837584792
-
 const RENDERER_ID = ':time-recorder';
 const RENDERER_PATTERN = /\{\{renderer\s+:time-recorder\s*(?:,\s*([^}]*))?\}\}/gm;
 
@@ -74,15 +72,20 @@ async function main() {
     )
   });
 
-  function renderTimer({
+  function timeTableId(slot: string): string {
+    return `logseq-time-recorder-${slot}`;
+  }
+
+  async function renderTimer({
     slot, blockUuid, timeRecords
   }: { slot: string, blockUuid: string, timeRecords: TimeRecords }) {
 
+    // Table ID is used to check if the slot still exists.
     logseq.provideUI({
       slot,
       reset: true,
       template: `
-      <table style="white-space: normal;">
+      <table style="white-space: normal;" id="${timeTableId(slot)}">
         <tr>
           <th colspan="2" style="text-align: center; font-size: 1.1em;">Time Recorder</th>
         </tr>
@@ -109,20 +112,22 @@ async function main() {
       `,
     });
 
-    // provideUI will fail if the user has deleted the block/text in the meantime.
-    // However, it just prints an error to the console and doesn't throw an exception.
-    // The return value also seems to be the same in the error case. Therefore, we
-    // cannot tell if it failed and renderTimer() will just continue to be called
-    // forever (until Logseq is restarted) :-/
-
     if (timeRecords.pending) {
-      setTimeout(() => {
-        renderTimer({ slot, blockUuid, timeRecords })
-      }, 30 * 1000)
+      setTimeout(async () => {
+        // Calling this via `logseq.App.queryElementById` like specified in the documentation does not work.
+        // Is this a bug?
+        if (await logseq.UI.queryElementById(timeTableId(slot))) {
+          // If the table ID still exists, update the timer.
+          await renderTimer({ slot, blockUuid, timeRecords })
+        } else {
+          // If not (e.g. because the block was deleted or the user is editing the block), do nothing.
+          console.info('slot', slot, 'no longer exists, not updating timer');
+        }
+      }, 10 * 1000);
     }
   }
 
-  logseq.App.onMacroRendererSlotted(({ slot, payload }) => {
+  logseq.App.onMacroRendererSlotted(async ({ slot, payload }) => {
     const rendererID = payload.arguments[0];
     if (rendererID !== RENDERER_ID) {
       return;
