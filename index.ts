@@ -1,6 +1,8 @@
 import '@logseq/libs';
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user';
 
+// TODO: detect if block becomes invalid and remove timeout maybe using one of these event handlers: https://github.com/logseq/plugins/issues/14#issuecomment-1837584792
+
 const RENDERER_ID = ':time-recorder';
 const RENDERER_PATTERN = /\{\{renderer\s+:time-recorder\s*(?:,\s*([^}]*))?\}\}/gm;
 
@@ -31,7 +33,7 @@ async function main() {
           return;
         }
         await logseq.Editor.updateBlock(blockUuid, newContent);
-        renderTimer({ slot: slotId, timeRecords, blockUuid});
+        renderTimer({ slot: slotId, timeRecords, blockUuid });
       } catch (error) {
         logseq.UI.showMsg(`Error: ${error}`, 'error');
       }
@@ -57,7 +59,7 @@ async function main() {
           return;
         }
         await logseq.Editor.updateBlock(blockUuid, newContent);
-        renderTimer({ slot: slotId, timeRecords, blockUuid});
+        renderTimer({ slot: slotId, timeRecords, blockUuid });
       } catch (error) {
         logseq.UI.showMsg(`Error: ${error}`, 'error');
       }
@@ -74,7 +76,7 @@ async function main() {
 
   function renderTimer({
     slot, blockUuid, timeRecords
-  }: { slot: string, blockUuid: string, timeRecords: TimeRecords}) {
+  }: { slot: string, blockUuid: string, timeRecords: TimeRecords }) {
 
     logseq.provideUI({
       slot,
@@ -95,9 +97,9 @@ async function main() {
           <td colspan="2" style="vertical-align: top;">
             <div class="flex justify-center">
               <button
-                class="ui__button bg-indigo-600 hover:bg-indigo-700 focus:border-indigo-700 active:bg-indigo-700 text-center text-sm p-2"
-                data-slot-id="${slot}" 
-                data-block-uuid="${blockUuid}" 
+                class="ui__button ui__button-theme-color ui__button-depth-1 ui__button-color-custom ui__button-size-md"
+                data-slot-id="${slot}"
+                data-block-uuid="${blockUuid}"
                 data-on-click="${timeRecords.pending ? 'clockOut' : 'clockIn'}">${timeRecords.pending ? 'Clock OUT' : 'Clock IN'}
               </button>
             </div>
@@ -115,7 +117,7 @@ async function main() {
 
     if (timeRecords.pending) {
       setTimeout(() => {
-        renderTimer({ slot, blockUuid, timeRecords})
+        renderTimer({ slot, blockUuid, timeRecords })
       }, 30 * 1000)
     }
   }
