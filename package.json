@@ -5,18 +5,17 @@
   "author": "5hir0kur0",
   "license": "MIT",
   "scripts": {
-    "dev": "parcel ./index.html --public-url ./",
+    "dev": "parcel ./index.html",
     "build": "parcel build --public-url . --no-source-maps index.html"
   },
   "devDependencies": {
     "@logseq/libs": "^0.0.15",
-    "parcel": "^2.0.0"
+    "parcel": "^2.10.3"
   },
-  "dependencies": {},
   "logseq": {
     "name": "Time Recorder",
     "main": "dist/index.html",
     "icon": "./logo.png",
-    "id": "_1vb2szddi-time-recorder"
+    "id": "logseq-time-recorder"
   }
 }
