@@ -23,7 +23,7 @@ I am not a web developer. If you know how to make the code nicer or the UI prett
 
 ## Building and Running the Plugin
 
-- `yarn && yarn build` in terminal to install dependencies.
+- `npm install && npm run build` in terminal to install dependencies.
 - `Load unpacked plugin` in Logseq Desktop client.
 
 ## Thanks
