@@ -1,67 +1,47 @@
 name: Build plugin
 
-# Copied from: https://github.com/xyhp915/logseq-journals-calendar/tree/main/.github/workflows
+# Inspired by: https://github.com/xyhp915/logseq-journals-calendar/tree/main/.github/workflows
+# and https://github.com/pengx17/logseq-plugin-template-react/blob/master/.github/workflows
+
+env:
+  PLUGIN_NAME: logseq-time-recorder
 
 on:
   push:
     # Sequence of patterns matched against refs/tags
     tags:
-      - "*" # Push events to matching any tag format, i.e. 1.0, 20.15.10
-
-env:
-  PLUGIN_NAME: logseq-time-tracker
+      - "v*.*.*"
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "21.x" # You might need to adjust this value to your own version
-      - name: Build
+      - name: Build with npm
         id: build
         run: |
           npm install
           npm run build
-          mkdir ${{ env.PLUGIN_NAME }}
-          cp README.md package.json ${{ env.PLUGIN_NAME }}
-          mv dist ${{ env.PLUGIN_NAME }}
-          zip -r ${{ env.PLUGIN_NAME }}.zip ${{ env.PLUGIN_NAME }}
-          ls
-          echo "tag_name=$(git tag --sort version:refname | tail -n 1)" >> $GITHUB_OUTPUT
+          TAG_NAME="$(git tag --sort version:refname | tail -n 1)"
+          RELEASE_DIR="${{ env.PLUGIN_NAME }}-$TAG_NAME"
+          mkdir "$RELEASE_DIR"
+          cp LICENSE README.md package.json "$RELEASE_DIR"
+          mv dist "$RELEASE_DIR"
+          zip -r "${RELEASE_DIR}.zip" "$RELEASE_DIR"
+          echo "$ ls -l ${PWD}/${RELEASE_DIR}"
+          ls -l "$RELEASE_DIR"
+          echo "$ ls -l $PWD"
+          ls -l
+          echo "release_zip=${RELEASE_DIR}.zip" >> $GITHUB_OUTPUT
 
-      - name: Create Release
-        uses: ncipollo/release-action@v1
-        id: create_release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ github.ref }}
+      - name: Create release
+        uses: softprops/action-gh-release@v1
         with:
-          allowUpdates: true
-          draft: false
-          prerelease: false
-
-      - name: Upload zip file
-        id: upload_zip
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ env.PLUGIN_NAME }}.zip
-          asset_name: ${{ env.PLUGIN_NAME }}-${{ steps.build.outputs.tag_name }}.zip
-          asset_content_type: application/zip
-
-      - name: Upload package.json
-        id: upload_metadata
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./package.json
-          asset_name: package.json
-          asset_content_type: application/json
+          files: |
+            ${{ steps.build.outputs.release_zip }}
