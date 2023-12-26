@@ -31,7 +31,7 @@ jobs:
           TAG_NAME="$(git tag --sort version:refname | tail -n 1)"
           RELEASE_DIR="${{ env.PLUGIN_NAME }}-$TAG_NAME"
           mkdir "$RELEASE_DIR"
-          cp LICENSE README.md package.json "$RELEASE_DIR"
+          cp LICENSE README.md package.json icon.png "$RELEASE_DIR"
           mv dist "$RELEASE_DIR"
           zip -r "${RELEASE_DIR}.zip" "$RELEASE_DIR"
           echo "$ ls -l ${PWD}/${RELEASE_DIR}"
