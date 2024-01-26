@@ -100,7 +100,7 @@ async function main() {
           <td colspan="2" style="vertical-align: top;">
             <div class="flex justify-center">
               <button
-                class="ui__button ui__button-theme-color ui__button-depth-1 ui__button-color-custom ui__button-size-md"
+                class="ui__button inline-flex items-center justify-center whitespace-nowrap gap-1 font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 select-none bg-primary/90 hover:bg-primary/100 active:opacity-90 text-primary-foreground hover:text-primary-foreground as-classic h-7 rounded px-3 py-1 text-sm mr-1"
                 data-slot-id="${slot}"
                 data-block-uuid="${blockUuid}"
                 data-on-click="${timeRecords.pending ? 'clockOut' : 'clockIn'}">${timeRecords.pending ? 'Clock OUT' : 'Clock IN'}
