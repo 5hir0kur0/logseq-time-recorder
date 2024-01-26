@@ -9,8 +9,8 @@
     "build": "parcel build --public-url . --no-source-maps index.html"
   },
   "devDependencies": {
-    "@logseq/libs": "^0.0.15",
-    "parcel": "^2.10.3"
+    "@logseq/libs": "^0.0.17",
+    "parcel": "^2.11.0"
   },
   "logseq": {
     "name": "Time Recorder",
