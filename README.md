@@ -7,7 +7,6 @@ Logseq has a built-in feature to track the time spent `DOING` a `TODO` block. Ho
 
 ![Demo GIF](https://github.com/5hir0kur0/logseq-time-recorder/assets/12101162/8ec69e03-52e9-4eec-b6f4-d6bd412da619)
 
-
 ## Features
 
 - Track your working hours during a workday.
