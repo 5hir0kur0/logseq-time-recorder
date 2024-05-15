@@ -13,15 +13,15 @@ async function main() {
   logseq.provideModel({
     async clockIn(e: any) {
       const now = new Date();
-      logseq.UI.showMsg(`Clocking IN at ${formatTimeOfDay(now)}.`);
 
       const { slotId, blockUuid } = e.dataset;
 
       try {
         const block = await logseq.Editor.getBlock(blockUuid);
+        if (!block) { return; }
         const timeRecords = parseTimeRecordsFromBlock(block);
         if (timeRecords.pending) {
-          logseq.UI.showMsg(`Already clocked in!`, 'warning');
+          await logseq.UI.showMsg(`Already clocked in!`, 'warning');
           return;
         }
         timeRecords.pending = now;
@@ -32,21 +32,22 @@ async function main() {
         }
         await logseq.Editor.updateBlock(blockUuid, newContent);
         renderTimer({ slot: slotId, timeRecords, blockUuid });
+        await logseq.UI.showMsg(`Clocking IN at ${formatTimeOfDay(now)}.`);
       } catch (error) {
-        logseq.UI.showMsg(`Error: ${error}`, 'error');
+        await logseq.UI.showMsg(`Error: ${error}`, 'error');
       }
     },
     async clockOut(e: any) {
       const now = new Date();
-      logseq.UI.showMsg(`Clocking OUT at ${formatTimeOfDay(now)}.`);
 
       const { slotId, blockUuid } = e.dataset;
 
       try {
         const block = await logseq.Editor.getBlock(blockUuid);
+        if (!block) { return; }
         const timeRecords = parseTimeRecordsFromBlock(block);
         if (!timeRecords.pending) {
-          logseq.UI.showMsg(`Not clocked in!`, 'warning');
+          await logseq.UI.showMsg(`Not clocked in!`, 'warning');
           return;
         }
         timeRecords.timeSlots.push([timeRecords.pending, now]);
@@ -58,8 +59,9 @@ async function main() {
         }
         await logseq.Editor.updateBlock(blockUuid, newContent);
         renderTimer({ slot: slotId, timeRecords, blockUuid });
+        await logseq.UI.showMsg(`Clocking OUT at ${formatTimeOfDay(now)}.`);
       } catch (error) {
-        logseq.UI.showMsg(`Error: ${error}`, 'error');
+        await logseq.UI.showMsg(`Error: ${error}`, 'error');
       }
     },
   });
@@ -215,7 +217,7 @@ function parseTimeRecords(inputStrings: string[]): TimeRecords {
   return { timeSlots, pending };
 }
 
-function parseTimeRecordsFromBlock(block: BlockEntity | null): TimeRecords {
+function parseTimeRecordsFromBlock(block: BlockEntity): TimeRecords {
   const matches = block?.content.matchAll(RENDERER_PATTERN);
   if (!matches) {
     throw `Failed to parse block content: ${block?.content}`;
