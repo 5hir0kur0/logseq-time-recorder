@@ -1,6 +1,7 @@
 import { BlockEntity } from "@logseq/libs/dist/LSPlugin.user";
 import {
   Timestamp,
+  formatTime,
   formatTimestamp,
   getMinutesBetween,
   parseTimestamp,
@@ -129,17 +130,4 @@ export function parseTimeRecords(inputStrings: string[]): TimeRecords {
   }
 
   return new TimeRecords(timeSlots, pending);
-}
-
-function formatTime(timeInMinutes: number): string {
-  const minutesPerHour = 60;
-  if (timeInMinutes > minutesPerHour) {
-    const hours = Math.floor(timeInMinutes / minutesPerHour);
-    const minutes = timeInMinutes % minutesPerHour;
-    if (minutes === 0) {
-      return `${hours}h`;
-    }
-    return `${hours}h ${minutes}m`;
-  }
-  return `${timeInMinutes}m`;
 }

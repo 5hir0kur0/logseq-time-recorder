@@ -109,3 +109,23 @@ export function formatTimestamp(timestamp: Timestamp): string {
 export function timestampNowFormatted(): string {
   return formatTimestamp(timestampNow());
 }
+
+export function formatTime(timeInMinutes: number): string {
+  const minutesPerHour = 60;
+  if (timeInMinutes > minutesPerHour) {
+    const hours = Math.floor(timeInMinutes / minutesPerHour);
+    const minutes = timeInMinutes % minutesPerHour;
+    if (minutes === 0) {
+      return `${hours}h`;
+    }
+    return `${hours}h ${minutes}m`;
+  }
+  return `${timeInMinutes}m`;
+}
+
+// Returns the time between two timestamps formatted as "Xh Ym".
+// If the end timestamp is not provided, the current time is used.
+export function formatTimeBetween(start: Timestamp, end?: Timestamp): string {
+  const minutes = getMinutesBetween(start.date, end?.date ?? new Date());
+  return formatTime(Math.round(minutes));
+}
