@@ -126,10 +126,31 @@ async function renderTimer({
   blockUuid: string;
   timeRecords: TimeRecords;
 }) {
+  function button() {
+    return `
+      <button
+        class="ui__button inline-flex items-center justify-center whitespace-nowrap gap-1 font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 select-none bg-primary/90 hover:bg-primary/100 active:opacity-90 text-primary-foreground hover:text-primary-foreground as-classic h-7 rounded px-3 py-1 text-sm mr-1"
+        style="margin-right: 0;"
+        data-slot-id="${slot}"
+        data-block-uuid="${blockUuid}"
+        data-on-click="${timeRecords.pending ? "clockOut" : "clockIn"}">${timeRecords.pending ? "Clock out" : "Clock in"}
+      </button>
+    `;
+  }
+
   function header() {
     return `
       <tr>
-        <th colspan="4" style="text-align: center; font-size: 1.1em;">Time Recorder</th>
+        <th colspan="4">
+          <div style="display: flex; justify-content: space-between;">
+            <div style="display: flex; align-items: center; font-size: 1.3em; margin-right: 1.5em;">
+              Time Recorder
+            </div>
+            <div>
+              ${button()}
+            </div>
+          </div>
+        </th>
       </tr>
     `;
   }
@@ -137,8 +158,8 @@ async function renderTimer({
   function row(start: Timestamp, end?: Timestamp): string {
     return `
       <tr>
-        <td style="text-align: right">${formatTimestampHTML(start)}</td>
-        <td style="padding-left: 0; padding-right: 0;">–</td>
+        <td style="text-align: right;">${formatTimestampHTML(start)}</td>
+        <td style="padding-left: 0; padding-right: 0; text-align: center;">–</td>
         <td style="text-align: left">${end ? formatTimestampHTML(end) : '<span style="color: #888;">now</span>'}</td>
         <td style="color: #888;">${formatTimeBetween(start, end)}</td>
       </tr>
@@ -160,7 +181,7 @@ async function renderTimer({
     slot,
     reset: true,
     template: `
-      <table style="white-space: normal;" id="${timeTableId(slot)}">
+      <table style="white-space: normal; margin-top: 0;" id="${timeTableId(slot)}">
         <thead>
           ${header()}
         </thead>
@@ -168,20 +189,8 @@ async function renderTimer({
           ${body()}
         </tbody>
         <tfoot>
-          <tr style="font-weight: bold;">
-            <td colspan="3">Total:</td> <td>${timeRecords.totalTime()}</td>
-          </tr>
           <tr>
-            <td colspan="4" style="vertical-align: top;">
-              <div class="flex justify-center">
-                <button
-                  class="ui__button inline-flex items-center justify-center whitespace-nowrap gap-1 font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 select-none bg-primary/90 hover:bg-primary/100 active:opacity-90 text-primary-foreground hover:text-primary-foreground as-classic h-7 rounded px-3 py-1 text-sm mr-1"
-                  data-slot-id="${slot}"
-                  data-block-uuid="${blockUuid}"
-                  data-on-click="${timeRecords.pending ? "clockOut" : "clockIn"}">${timeRecords.pending ? "Clock out" : "Clock in"}
-                </button>
-              </div>
-            </td>
+            <td colspan="3">Total:</td> <td style="font-weight: bold;">${timeRecords.totalTime()}</td>
           </tr>
         </tfoot>
       </table>
@@ -203,7 +212,6 @@ async function renderTimer({
   }
 }
 
-const ISO_TIME_OF_DAY_REGEX = /T(\d{2}):(\d{2})/;
 export function formatTimestampHTML(timestamp: Timestamp): string {
   const formatted = formatTimestamp(timestamp);
   if (timestamp.format === "short") {
