@@ -6,9 +6,14 @@ import {
   parseTimeRecords,
   parseTimeRecordsFromBlock,
 } from "./time-records.ts";
-import { SCHEMA as SETTINGS_SCHEMA, onSettingsChanged } from "./settings.ts";
+import {
+  SCHEMA as SETTINGS_SCHEMA,
+  getSettings,
+  onSettingsChanged,
+} from "./settings.ts";
 import {
   Timestamp,
+  currentJournalPageRef,
   formatTimeBetween,
   formatTimeOfDay,
   formatTimestamp,
@@ -29,9 +34,7 @@ async function main() {
   logseq.onSettingsChanged(onSettingsChanged);
 
   logseq.Editor.registerSlashCommand("🕰️ Insert Time Recorder", async () => {
-    await logseq.Editor.insertAtEditingCursor(
-      `{{renderer ${RENDERER_ID}, ${timestampNowFormatted()}}} `,
-    );
+    await logseq.Editor.insertAtEditingCursor(await applyTemplate());
   });
 
   logseq.App.onMacroRendererSlotted(async ({ slot, payload }) => {
@@ -181,7 +184,7 @@ async function renderTimer({
     slot,
     reset: true,
     template: `
-      <table style="white-space: normal; margin-top: 0;" id="${timeTableId(slot)}">
+      <table style="white-space: normal; margin: 0;" id="${timeTableId(slot)}">
         <thead>
           ${header()}
         </thead>
@@ -222,4 +225,21 @@ export function formatTimestampHTML(timestamp: Timestamp): string {
     (_, date, time) =>
       `<span style="color: #888;">${date}</span>&nbsp;&nbsp;${time}`,
   );
+}
+
+function rendererMacro(): string {
+  return `{{renderer ${RENDERER_ID}, ${timestampNowFormatted()}}} `;
+}
+
+async function applyTemplate(): Promise<string> {
+  let template = getSettings().blockTemplate;
+  // Make sure {{{time-recorder}}} is always contained in the template.
+  if (!template.includes("{{{time-recorder}}}")) {
+    template += " {{{time-recorder}}}";
+  }
+  if (template.includes("{{{today}}}")) {
+    template = template.replace("{{{today}}}", await currentJournalPageRef());
+  }
+  template = template.replace("{{{time-recorder}}}", rendererMacro());
+  return template;
 }

@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { getSettings } from "./settings";
 
 // Date format, e.g.: 2024-05-15T21:12
@@ -128,4 +129,25 @@ export function formatTime(timeInMinutes: number): string {
 export function formatTimeBetween(start: Timestamp, end?: Timestamp): string {
   const minutes = getMinutesBetween(start.date, end?.date ?? new Date());
   return formatTime(Math.round(minutes));
+}
+
+// It would be very nice if Logseq had a way to link to dates that did not depend on the user's preferred date format...
+// See discussion here: https://github.com/logseq/logseq/discussions/7933 (store date as ISO 8601, render in user's preferred format).
+// Until then, we can use this function to get a reference to the current journal page.
+export async function currentJournalPageRef(): Promise<string> {
+  // Inspired by logseq-omnivore:
+  // https://github.com/omnivore-app/logseq-omnivore/blob/1c5a965dba55b70ffbbb821eeab71f9f538958b0/src/util.ts
+  const userConfigs = await logseq.App.getUserConfigs();
+  const preferredDateFormat: string = userConfigs.preferredDateFormat;
+  const formatDate = (date: Date, preferredDateFormat: string): string => {
+    return format(date, preferredDateFormat, {
+      // Use YY and YYYY for the year instead of for week-numbering.
+      useAdditionalDayOfYearTokens: true,
+      useAdditionalWeekYearTokens: true,
+    });
+  };
+  const dateReference = (date: Date, preferredDateFormat: string): string => {
+    return `[[${formatDate(date, preferredDateFormat)}]]`;
+  };
+  return dateReference(new Date(), preferredDateFormat);
 }

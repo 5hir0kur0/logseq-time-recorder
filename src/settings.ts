@@ -3,10 +3,12 @@ import { TimestampFormat } from "./dates";
 
 export type Settings = {
   defaultTimestampFormat: TimestampFormat;
+  blockTemplate: string;
 };
 
 let settings: Settings = {
   defaultTimestampFormat: "long",
+  blockTemplate: "{{{time-recorder}}}",
 };
 
 export const SCHEMA: SettingSchemaDesc[] = [
@@ -14,11 +16,21 @@ export const SCHEMA: SettingSchemaDesc[] = [
     key: "defaultTimestampFormat",
     default: settings.defaultTimestampFormat,
     description:
-      "Whether to use short (HH:MM) or long (ISO) timestamps by default.",
+      "Whether to use short (HH:MM) or long (ISO) timestamps by default. Set to 'long' to track time across multiple days.",
     title: "Default Timestamp Format",
     type: "enum",
     enumPicker: "radio",
     enumChoices: ["short", "long"],
+  },
+  {
+    key: "blockTemplate",
+    default: settings.blockTemplate,
+    description:
+      "The template to use when inserting a new time recorder block.\
+      Use `{{{time-recorder}}}` to insert the time recorder. Use `{{{today}}}` to insert a link to today's journal.",
+    title: "Time Recorder Block Template",
+    type: "string",
+    inputAs: "textarea",
   },
 ];
 
