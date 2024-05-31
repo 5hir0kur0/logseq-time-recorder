@@ -1,17 +1,30 @@
 # Logseq Time Recorder
 
-This plugin can be used for tracking working hours.
-Logseq has a built-in feature to track the time spent `DOING` a `TODO` block. However, it is not possible to edit this information (e.g., if you forgot to change the state from `TODO` to `DOING` when you started working on a task) from within Logseq.
+This is a simple plugin for tracking working hours.
+Logseq has a built-in feature to track the time spent `DOING` a `TODO` block. However, it is not possible to edit this information (e.g., if you forgot to change the state from `TODO` to `DOING` when you started working on a task) from _within_ Logseq.
 
 ## Demo
 
-![Demo GIF](https://github.com/5hir0kur0/logseq-time-recorder/assets/12101162/8ec69e03-52e9-4eec-b6f4-d6bd412da619)
+<img src="https://github.com/5hir0kur0/logseq-time-recorder/assets/12101162/8d1cf67a-9ab7-49d0-a321-22b8bb83ac98" width="700" alt="Demo GIF">
 
 ## Features
 
 - Track your working hours during a workday.
+- Track working hours across multiple days using the `long` date format.
 - Button to clock in and clock out.
 - The recorded times are also manually editable.
+
+## Screenshots
+
+Short Date Format:<br>
+<img src="https://github.com/5hir0kur0/logseq-time-recorder/assets/12101162/5fd24002-7c37-45a0-b5b9-5bd646230468" width="260" alt="Short Date Format" title="Short Date Format">
+
+Long Date Format:<br>
+<img src="https://github.com/5hir0kur0/logseq-time-recorder/assets/12101162/b6ccfb9b-9179-4770-96bc-9a02b0ad4651" width="380" alt="Long Date Format" title="Long Date Format">
+
+Settings:<br>
+<img src="https://github.com/5hir0kur0/logseq-time-recorder/assets/12101162/12c9c515-6175-4e77-8313-edc64427ff95" width="500" alt="Settings" title="Settings">
+
 
 ## Future Goals
 
