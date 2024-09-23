@@ -55,12 +55,7 @@ export class TimeRecords {
     if (remainingMinutes > 60*15) {
       format = "long"
     }
-    if (this.pending) {
-      return formatTimestamp({date: incrementTimestampByMinutes(this.pending.date, remainingMinutes), format: format})
-    }
-    else {
-      return formatTimestamp({date: incrementTimestampByMinutes(timestampNow().date, remainingMinutes), format: format})
-    }
+    return formatTimestamp({date: incrementTimestampByMinutes(timestampNow().date, remainingMinutes), format: format})
   }
 
   addTimeSlot(start: Timestamp, end: Timestamp): TimeRecords {
