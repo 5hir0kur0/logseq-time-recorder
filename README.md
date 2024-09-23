@@ -1,4 +1,4 @@
-# Logseq Time Recorder
+# Logseq Punch Clock
 
 This is a simple plugin for tracking working hours.
 Logseq has a built-in feature to track the time spent `DOING` a `TODO` block. However, it is not possible to edit this information (e.g., if you forgot to change the state from `TODO` to `DOING` when you started working on a task) from _within_ Logseq.
