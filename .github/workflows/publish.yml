@@ -4,7 +4,7 @@ name: Build plugin
 # and https://github.com/pengx17/logseq-plugin-template-react/blob/master/.github/workflows
 
 env:
-  PLUGIN_NAME: logseq-time-recorder
+  PLUGIN_NAME: logseq-punch-clock
 
 on:
   push:
