@@ -197,14 +197,19 @@ async function renderTimer({
     `
   }
   function goal(): string {
-    return `
-          <tr>
-            <td colspan="3">Remaining:</td> <td style="font-weight: bold;">${timeRecords.goalRemainingMinutes()}</td>
-          </tr>
-          <tr>
-            <td colspan="3">ETA:</td> <td style="font-weight: bold;">${timeRecords.goalETATime()}</td>
-          </tr>
-    `
+    if (timeRecords.goalMinutes) {
+      return `
+            <tr>
+              <td colspan="3">Remaining:</td> <td style="font-weight: bold;">${timeRecords.goalRemainingMinutes()}</td>
+            </tr>
+            <tr>
+              <td colspan="3">ETA:</td> <td style="font-weight: bold;">${timeRecords.goalETATime()}</td>
+            </tr>
+      `
+    }
+    else {
+      return ""
+    }
   }
 
   // Table ID is used to check if the slot still exists.
