@@ -33,7 +33,7 @@ async function main() {
   logseq.useSettingsSchema(SETTINGS_SCHEMA);
   logseq.onSettingsChanged(onSettingsChanged);
 
-  logseq.Editor.registerSlashCommand("🕰️ Insert Time Recorder", async () => {
+  logseq.Editor.registerSlashCommand("🕰️ Insert Punch Clock", async () => {
     await logseq.Editor.insertAtEditingCursor(await applyTemplate());
   });
 
@@ -147,7 +147,7 @@ async function renderTimer({
         <th colspan="4">
           <div style="display: flex; justify-content: space-between;">
             <div style="display: flex; align-items: center; font-size: 1.3em; margin-right: 1.5em;">
-              Time Recorder
+              Punch Clock
             </div>
             <div>
               ${button()}
