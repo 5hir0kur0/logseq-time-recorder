@@ -107,16 +107,9 @@ export function parseTimeRecordsFromBlock(block: BlockEntity): TimeRecords {
   if (!match || match.length < 2) {
     throw `Invalid renderer syntax: ${block?.content}`;
   }
+
   const directives = match[1]?.split(",").map((a) => a.trim()) || [];
-
-  const timeRecordsStrArray = directives.filter((a: String) => a.includes('-'))
-  const timeRecordsObject = parseTimeRecords(timeRecordsStrArray);
-
-  const goalDirectives: String[] = directives.filter((a:String) => a.startsWith('goal:'))
-  if (goalDirectives.length > 0) {
-    timeRecordsObject.goalMinutes = parseInt(goalDirectives[0].substring(5).trim(), 10)
-  }
-  return timeRecordsObject
+  return parseTimeRecords(directives);
 }
 
 function findTimestampStrings(input: string): string[] {
@@ -125,7 +118,7 @@ function findTimestampStrings(input: string): string[] {
   return input.split(/(?<=\d:\d{2})\s*-/).map((part) => part.trim());
 }
 
-export function parseTimeRecords(inputStrings: string[]): TimeRecords {
+function parseTimeRecordsFromTimestamps(inputStrings: string[]): TimeRecords {
   const timeSlots: Array<[Timestamp, Timestamp]> = [];
   let pending: Timestamp | undefined = undefined;
   for (let i = 0; i < inputStrings.length; i++) {
@@ -156,4 +149,16 @@ export function parseTimeRecords(inputStrings: string[]): TimeRecords {
   }
 
   return new TimeRecords(timeSlots, pending, undefined);
+}
+
+
+export function parseTimeRecords(inputStrings: string[]): TimeRecords {
+  const timeRecordsStrArray = inputStrings.filter((a: String) => a.includes('-'))
+  const timeRecordsObject = parseTimeRecords(timeRecordsStrArray);
+
+  const goalDirectives: String[] = inputStrings.filter((a:String) => a.startsWith('goal:'))
+  if (goalDirectives.length > 0) {
+    timeRecordsObject.goalMinutes = parseInt(goalDirectives[0].substring(5).trim(), 10)
+  }
+  return timeRecordsObject
 }
