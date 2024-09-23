@@ -154,7 +154,7 @@ function parseTimeRecordsFromTimestamps(inputStrings: string[]): TimeRecords {
 
 export function parseTimeRecords(inputStrings: string[]): TimeRecords {
   const timeRecordsStrArray = inputStrings.filter((a: String) => a.includes('-'))
-  const timeRecordsObject = parseTimeRecords(timeRecordsStrArray);
+  const timeRecordsObject = parseTimeRecordsFromTimestamps(timeRecordsStrArray);
 
   const goalDirectives: String[] = inputStrings.filter((a:String) => a.startsWith('goal:'))
   if (goalDirectives.length > 0) {
