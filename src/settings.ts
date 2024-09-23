@@ -8,7 +8,7 @@ export type Settings = {
 
 let settings: Settings = {
   defaultTimestampFormat: "long",
-  blockTemplate: "{{{time-recorder}}}",
+  blockTemplate: "{{{punch-clock}}}",
 };
 
 export const SCHEMA: SettingSchemaDesc[] = [
@@ -27,7 +27,7 @@ export const SCHEMA: SettingSchemaDesc[] = [
     default: settings.blockTemplate,
     description:
       "The template to use when inserting a new time recorder block.\
-      Use `{{{time-recorder}}}` to insert the time recorder. Use `{{{today}}}` to insert a link to today's journal.",
+      Use `{{{punch-clock}}}` to insert the time recorder. Use `{{{today}}}` to insert a link to today's journal.",
     title: "Time Recorder Block Template",
     type: "string",
     inputAs: "textarea",

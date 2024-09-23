@@ -23,7 +23,7 @@
     "name": "Time Recorder",
     "main": "dist/index.html",
     "icon": "icon.png",
-    "id": "logseq-time-recorder"
+    "id": "logseq-punch-clock"
   },
   "dependencies": {
     "date-fns": "^2.29.3"

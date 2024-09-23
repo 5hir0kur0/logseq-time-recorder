@@ -4,18 +4,20 @@ import {
   formatTime,
   formatTimestamp,
   getMinutesBetween,
+  incrementTimestampByMinutes,
   parseTimestamp,
   timestampNow,
 } from "./dates";
 
-export const RENDERER_ID = ":time-recorder";
+export const RENDERER_ID = ":punch-clock";
 export const RENDERER_PATTERN =
-  /\{\{renderer\s+:time-recorder\s*(?:,\s*([^}]*))?\}\}/gm;
+  /\{\{renderer\s+:punch-clock\s*(?:,\s*([^}]*))?\}\}/gm;
 
 export class TimeRecords {
   constructor(
     public readonly timeSlots: Array<[Timestamp, Timestamp]>,
     public readonly pending?: Timestamp,
+    public goalMinutes?: number,
   ) {}
 
   toString(): string {
@@ -23,7 +25,8 @@ export class TimeRecords {
       (times) => `${formatTimestamp(times[0])} - ${formatTimestamp(times[1])}`,
     );
     const pending = this.pending ? [`${formatTimestamp(this.pending)} -`] : [];
-    return [...timeSlots, ...pending].join(", ");
+    const goal = this.goalMinutes ? [`goal: ${this.goalMinutes}`] : [];
+    return [...goal, ...timeSlots, ...pending].join(", ");
   }
 
   totalMinutes(): number {
@@ -39,6 +42,21 @@ export class TimeRecords {
 
   totalTime(): string {
     return formatTime(this.totalMinutes());
+  }
+
+  goalRemainingMinutes(): string {
+    const remainingMinutes = (this.goalMinutes ? this.goalMinutes : 0) - this.totalMinutes()
+    return formatTime(remainingMinutes)
+  }
+
+  goalETATime(): string {
+    const remainingMinutes = (this.goalMinutes ? this.goalMinutes : 0) - this.totalMinutes()
+    if (this.pending) {
+      return formatTimestamp({date: incrementTimestampByMinutes(this.pending.date, remainingMinutes), format: "short"})
+    }
+    else {
+      return formatTimestamp({date: incrementTimestampByMinutes(timestampNow().date, remainingMinutes), format: "short"})
+    }
   }
 
   addTimeSlot(start: Timestamp, end: Timestamp): TimeRecords {
@@ -89,8 +107,16 @@ export function parseTimeRecordsFromBlock(block: BlockEntity): TimeRecords {
   if (!match || match.length < 2) {
     throw `Invalid renderer syntax: ${block?.content}`;
   }
-  const timeRecords = match[1]?.split(",").map((a) => a.trim()) || [];
-  return parseTimeRecords(timeRecords);
+  const directives = match[1]?.split(",").map((a) => a.trim()) || [];
+
+  const timeRecordsStrArray = directives.filter((a: String) => a.includes('-'))
+  const timeRecordsObject = parseTimeRecords(timeRecordsStrArray);
+
+  const goalDirectives: String[] = directives.filter((a:String) => a.startsWith('goal:'))
+  if (goalDirectives.length > 0) {
+    timeRecordsObject.goalMinutes = parseInt(goalDirectives[0].substring(5).trim(), 10)
+  }
+  return timeRecordsObject
 }
 
 function findTimestampStrings(input: string): string[] {
@@ -101,7 +127,7 @@ function findTimestampStrings(input: string): string[] {
 
 export function parseTimeRecords(inputStrings: string[]): TimeRecords {
   const timeSlots: Array<[Timestamp, Timestamp]> = [];
-  let pending: Timestamp | undefined;
+  let pending: Timestamp | undefined = undefined;
   for (let i = 0; i < inputStrings.length; i++) {
     const inputStr = inputStrings[i];
     const parts = findTimestampStrings(inputStr);
@@ -129,5 +155,5 @@ export function parseTimeRecords(inputStrings: string[]): TimeRecords {
     }
   }
 
-  return new TimeRecords(timeSlots, pending);
+  return new TimeRecords(timeSlots, pending, undefined);
 }

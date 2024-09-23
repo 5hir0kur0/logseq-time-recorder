@@ -57,7 +57,7 @@ async function main() {
 }
 
 function timeTableId(slot: string): string {
-  return `logseq-time-recorder-${slot}`;
+  return `logseq-punch-clock-${slot}`;
 }
 
 async function clockIn({ dataset: { slotId, blockUuid } }) {
@@ -179,6 +179,24 @@ async function renderTimer({
       .join("");
   }
 
+  function total(): string {
+    return `
+          <tr>
+            <td colspan="3">Total:</td> <td style="font-weight: bold;">${timeRecords.totalTime()}</td>
+          </tr>
+    `
+  }
+  function goal(): string {
+    return `
+          <tr>
+            <td colspan="3">Remaining:</td> <td style="font-weight: bold;">${timeRecords.goalRemainingMinutes()}</td>
+          </tr>
+          <tr>
+            <td colspan="3">ETA:</td> <td style="font-weight: bold;">${timeRecords.goalETATime()}</td>
+          </tr>
+    `
+  }
+
   // Table ID is used to check if the slot still exists.
   logseq.provideUI({
     slot,
@@ -192,9 +210,8 @@ async function renderTimer({
           ${body()}
         </tbody>
         <tfoot>
-          <tr>
-            <td colspan="3">Total:</td> <td style="font-weight: bold;">${timeRecords.totalTime()}</td>
-          </tr>
+          ${total()}
+          ${goal()}
         </tfoot>
       </table>
       `,
@@ -233,13 +250,13 @@ function rendererMacro(): string {
 
 async function applyTemplate(): Promise<string> {
   let template = getSettings().blockTemplate;
-  // Make sure {{{time-recorder}}} is always contained in the template.
-  if (!template.includes("{{{time-recorder}}}")) {
-    template += " {{{time-recorder}}}";
+  // Make sure {{{punch-clock}}} is always contained in the template.
+  if (!template.includes("{{{punch-clock}}}")) {
+    template += " {{{punch-clock}}}";
   }
   if (template.includes("{{{today}}}")) {
     template = template.replace("{{{today}}}", await currentJournalPageRef());
   }
-  template = template.replace("{{{time-recorder}}}", rendererMacro());
+  template = template.replace("{{{punch-clock}}}", rendererMacro());
   return template;
 }
