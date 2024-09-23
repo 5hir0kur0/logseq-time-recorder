@@ -15,6 +15,7 @@ import {
   Timestamp,
   currentJournalPageRef,
   formatTimeBetween,
+  formatTime,
   formatTimeOfDay,
   formatTimestamp,
   timestampNowFormatted,
@@ -141,13 +142,22 @@ async function renderTimer({
     `;
   }
 
+  function goalHeader() {
+    if (timeRecords.goalMinutes) {
+      return `- Goal: ${formatTime(timeRecords.goalMinutes)}`
+    }
+    else {
+      return ""
+    }
+  }
+
   function header() {
     return `
       <tr>
         <th colspan="4">
           <div style="display: flex; justify-content: space-between;">
             <div style="display: flex; align-items: center; font-size: 1.3em; margin-right: 1.5em;">
-              Punch Clock
+              Punch Clock ${goalHeader()}
             </div>
             <div>
               ${button()}

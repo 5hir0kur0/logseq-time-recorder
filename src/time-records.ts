@@ -51,11 +51,15 @@ export class TimeRecords {
 
   goalETATime(): string {
     const remainingMinutes = (this.goalMinutes ? this.goalMinutes : 0) - this.totalMinutes()
+    let format : "short" | "long" = "short"
+    if (remainingMinutes > 60*15) {
+      format = "long"
+    }
     if (this.pending) {
-      return formatTimestamp({date: incrementTimestampByMinutes(this.pending.date, remainingMinutes), format: "short"})
+      return formatTimestamp({date: incrementTimestampByMinutes(this.pending.date, remainingMinutes), format: format})
     }
     else {
-      return formatTimestamp({date: incrementTimestampByMinutes(timestampNow().date, remainingMinutes), format: "short"})
+      return formatTimestamp({date: incrementTimestampByMinutes(timestampNow().date, remainingMinutes), format: format})
     }
   }
 
