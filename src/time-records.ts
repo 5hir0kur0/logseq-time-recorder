@@ -71,11 +71,11 @@ export class TimeRecords {
   }
 
   setPending(pending: Timestamp): TimeRecords {
-    return new TimeRecords(this.timeSlots, pending);
+    return new TimeRecords(this.timeSlots, pending, this.goalMinutes);
   }
 
   resetPending(): TimeRecords {
-    return new TimeRecords(this.timeSlots, undefined);
+    return new TimeRecords(this.timeSlots, undefined, this.goalMinutes);
   }
 
   clockIn(): TimeRecords {
