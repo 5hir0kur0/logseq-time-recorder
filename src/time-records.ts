@@ -67,7 +67,7 @@ export class TimeRecords {
     if (end.date.getTime() < start.date.getTime()) {
       throw `End time is before start time: ${formatTimestamp(end)} is before ${formatTimestamp(start)}.`;
     }
-    return new TimeRecords([...this.timeSlots, [start, end]], this.pending);
+    return new TimeRecords([...this.timeSlots, [start, end]], this.pending, this.goalMinutes);
   }
 
   setPending(pending: Timestamp): TimeRecords {
