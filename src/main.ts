@@ -15,6 +15,7 @@ import {
   Timestamp,
   currentJournalPageRef,
   formatTimeBetween,
+  formatTime,
   formatTimeOfDay,
   formatTimestamp,
   timestampNowFormatted,
@@ -141,13 +142,21 @@ async function renderTimer({
     `;
   }
 
+  function goalHeader() {
+    if (timeRecords.goalMinutes) {
+      return `- Goal: ${formatTime(timeRecords.goalMinutes)}`;
+    } else {
+      return "";
+    }
+  }
+
   function header() {
     return `
       <tr>
         <th colspan="4">
           <div style="display: flex; justify-content: space-between;">
             <div style="display: flex; align-items: center; font-size: 1.3em; margin-right: 1.5em;">
-              Time Recorder
+              Time Recorder ${goalHeader()}
             </div>
             <div>
               ${button()}
@@ -179,6 +188,28 @@ async function renderTimer({
       .join("");
   }
 
+  function total(): string {
+    return `
+          <tr>
+            <td colspan="3">Total:</td> <td style="font-weight: bold;">${timeRecords.totalTime()}</td>
+          </tr>
+    `;
+  }
+  function goal(): string {
+    if (timeRecords.goalMinutes) {
+      return `
+            <tr>
+              <td colspan="3">Remaining:</td> <td style="font-weight: bold;">${timeRecords.goalRemainingMinutes()}</td>
+            </tr>
+            <tr>
+              <td colspan="3">ETA:</td> <td style="font-weight: bold;">${timeRecords.goalETATime()}</td>
+            </tr>
+      `;
+    } else {
+      return "";
+    }
+  }
+
   // Table ID is used to check if the slot still exists.
   logseq.provideUI({
     slot,
@@ -192,9 +223,8 @@ async function renderTimer({
           ${body()}
         </tbody>
         <tfoot>
-          <tr>
-            <td colspan="3">Total:</td> <td style="font-weight: bold;">${timeRecords.totalTime()}</td>
-          </tr>
+          ${total()}
+          ${goal()}
         </tfoot>
       </table>
       `,

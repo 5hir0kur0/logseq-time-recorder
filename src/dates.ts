@@ -86,6 +86,16 @@ export function getMinutesBetween(start: Date, end: Date): number {
   return difference / millisecondsPerMinute;
 }
 
+export function incrementTimestampByMinutes(
+  stamp: Date,
+  minutes: number,
+): Date {
+  const millisecondsPerMinute = 60000;
+  const difference = minutes * millisecondsPerMinute;
+  const newTime = stamp.getTime() + difference;
+  return new Date(newTime);
+}
+
 export function formatTimeOfDay({ date: time }: ShortTimestamp): string {
   const hours = time.getHours().toString().padStart(2, "0");
   const minutes = time.getMinutes().toString().padStart(2, "0");
