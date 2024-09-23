@@ -2,7 +2,7 @@
   "name": "logseq-punch-clock",
   "version": "0.3.0",
   "description": "A simple time recorder (punch clock) plugin for Logseq.",
-  "author": "5hir0kur0",
+  "author": "ruzito",
   "license": "MIT",
   "scripts": {
     "dev": "parcel ./index.html",
