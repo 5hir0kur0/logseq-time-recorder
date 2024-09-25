@@ -13,6 +13,7 @@ Logseq has a built-in feature to track the time spent `DOING` a `TODO` block. Ho
 - Track working hours across multiple days using the `long` date format.
 - Button to clock in and clock out.
 - The recorded times are also manually editable.
+- Specify a goal duration (currently not exposed in the UI, but you can manually add it as the first argument, e.g. `{{renderer :time-recorder, goal: 8h, 09:00}}`)
 
 ## Screenshots
 
@@ -24,7 +25,6 @@ Long Date Format:<br>
 
 Settings:<br>
 <img src="https://github.com/5hir0kur0/logseq-time-recorder/assets/12101162/12c9c515-6175-4e77-8313-edc64427ff95" width="500" alt="Settings" title="Settings">
-
 
 ## Future Goals
 

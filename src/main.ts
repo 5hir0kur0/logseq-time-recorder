@@ -15,7 +15,7 @@ import {
   Timestamp,
   currentJournalPageRef,
   formatTimeBetween,
-  formatTime,
+  formatDurationMinutes,
   formatTimeOfDay,
   formatTimestamp,
   timestampNowFormatted,
@@ -144,7 +144,7 @@ async function renderTimer({
 
   function goalHeader() {
     if (timeRecords.goalMinutes) {
-      return `- Goal: ${formatTime(timeRecords.goalMinutes)}`;
+      return `<span style="color: #888;">&ensp;(Goal: ${formatDurationMinutes(timeRecords.goalMinutes)})</span>`;
     } else {
       return "";
     }
@@ -195,19 +195,30 @@ async function renderTimer({
           </tr>
     `;
   }
-  function goal(): string {
-    if (timeRecords.goalMinutes) {
-      return `
-            <tr>
-              <td colspan="3">Remaining:</td> <td style="font-weight: bold;">${timeRecords.goalRemainingMinutes()}</td>
-            </tr>
-            <tr>
-              <td colspan="3">ETA:</td> <td style="font-weight: bold;">${timeRecords.goalETATime()}</td>
-            </tr>
-      `;
-    } else {
+
+  function remainingTime(): string {
+    if (!timeRecords.goalMinutes) {
       return "";
     }
+    if (timeRecords.totalMinutes() < timeRecords.goalMinutes) {
+      // Only show ETA in clocked-in state.
+      const eta = () => {
+        if (timeRecords.pending) {
+          return `&ensp;(ETA ${timeRecords.goalETATime()})`;
+        }
+        return "";
+      };
+      return `
+        <tr>
+          <td colspan="4" style="text-align: center;"><i>${timeRecords.goalRemainingMinutes()}</i>&ensp;remaining${eta()}</td>
+        </tr>
+      `;
+    }
+    return `
+      <tr>
+        <td colspan="4" style="text-align: center;">Goal reached 🎉</td>
+      </tr>
+    `;
   }
 
   // Table ID is used to check if the slot still exists.
@@ -224,7 +235,7 @@ async function renderTimer({
         </tbody>
         <tfoot>
           ${total()}
-          ${goal()}
+          ${remainingTime()}
         </tfoot>
       </table>
       `,

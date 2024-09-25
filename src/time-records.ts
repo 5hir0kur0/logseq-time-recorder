@@ -1,10 +1,11 @@
 import { BlockEntity } from "@logseq/libs/dist/LSPlugin.user";
 import {
   Timestamp,
-  formatTime,
+  formatDurationMinutes,
   formatTimestamp,
   getMinutesBetween,
   incrementTimestampByMinutes,
+  parseDurationMinutes,
   parseTimestamp,
   timestampNow,
 } from "./dates";
@@ -25,11 +26,13 @@ export class TimeRecords {
       (times) => `${formatTimestamp(times[0])} - ${formatTimestamp(times[1])}`,
     );
     const pending = this.pending ? [`${formatTimestamp(this.pending)} -`] : [];
-    const goal = this.goalMinutes ? [`goal: ${this.goalMinutes}`] : [];
+    const goal = this.goalMinutes
+      ? [`goal: ${formatDurationMinutes(this.goalMinutes)}`]
+      : [];
     return [...goal, ...timeSlots, ...pending].join(", ");
   }
 
-  totalMinutes(): number {
+  totalMinutesExact(): number {
     let total = 0;
     for (const [start, end] of this.timeSlots) {
       total += getMinutesBetween(start.date, end.date);
@@ -37,28 +40,37 @@ export class TimeRecords {
     if (this.pending) {
       total += getMinutesBetween(this.pending.date, new Date());
     }
-    return Math.round(total);
+    return total;
+  }
+
+  totalMinutes(): number {
+    return Math.round(this.totalMinutesExact());
   }
 
   totalTime(): string {
-    return formatTime(this.totalMinutes());
+    return formatDurationMinutes(this.totalMinutes());
   }
 
   goalRemainingMinutes(): string {
     const remainingMinutes =
       (this.goalMinutes ? this.goalMinutes : 0) - this.totalMinutes();
-    return formatTime(remainingMinutes);
+    return formatDurationMinutes(remainingMinutes);
   }
 
+  /**
+   * Calculate the ETA time based on the goal and the current time,
+   * assuming that the user is clocked in.
+   */
   goalETATime(): string {
-    const remainingMinutes =
-      (this.goalMinutes ? this.goalMinutes : 0) - this.totalMinutes();
+    const remainingMinutes = (this.goalMinutes ?? 0) - this.totalMinutesExact();
     let format: "short" | "long" = "short";
-    if (remainingMinutes > 60 * 15) {
+    const eta = incrementTimestampByMinutes(new Date(), remainingMinutes);
+    if (eta.getDay() !== new Date().getDay()) {
+      // If the ETA is on a different day, show the full date.
       format = "long";
     }
     return formatTimestamp({
-      date: incrementTimestampByMinutes(timestampNow().date, remainingMinutes),
+      date: eta,
       format: format,
     });
   }
@@ -84,14 +96,14 @@ export class TimeRecords {
 
   clockIn(): TimeRecords {
     if (this.pending) {
-      throw `Already clocked in!`;
+      throw "Already clocked in!";
     }
     return this.setPending(timestampNow());
   }
 
   clockOut(): TimeRecords {
     if (!this.pending) {
-      throw `Not clocked in!`;
+      throw "Not clocked in!";
     }
     const now = timestampNow();
     return this.resetPending().addTimeSlot(this.pending, now);
@@ -126,7 +138,17 @@ function findTimestampStrings(input: string): string[] {
   return input.split(/(?<=\d:\d{2})\s*-/).map((part) => part.trim());
 }
 
-function parseTimeRecordsFromTimestamps(inputStrings: string[]): TimeRecords {
+function parseGoal(inputStrings: string[]): [number | undefined, string[]] {
+  if (inputStrings.length === 0) {
+    return [undefined, []];
+  }
+  const [goal, ...rest] = inputStrings;
+  return [parseDurationMinutes(goal), rest];
+}
+
+function parseTimeSlots(
+  inputStrings: string[],
+): [Array<[Timestamp, Timestamp]>, Timestamp | undefined] {
   const timeSlots: Array<[Timestamp, Timestamp]> = [];
   let pending: Timestamp | undefined = undefined;
   for (let i = 0; i < inputStrings.length; i++) {
@@ -136,7 +158,7 @@ function parseTimeRecordsFromTimestamps(inputStrings: string[]): TimeRecords {
       throw `invalid time slot: ${inputStr}`;
     }
     if (parts.length == 2 && !parts[1]) {
-      // delete the second part if e.g. the string was "HH:MM - ".
+      // delete the second (empty string) part if e.g. the string was "HH:MM - ".
       parts.pop();
     }
     const isPending = parts.length === 1;
@@ -155,24 +177,11 @@ function parseTimeRecordsFromTimestamps(inputStrings: string[]): TimeRecords {
       timeSlots.push([start, end]);
     }
   }
-
-  return new TimeRecords(timeSlots, pending, undefined);
+  return [timeSlots, pending];
 }
 
-export function parseTimeRecords(inputStrings: string[]): TimeRecords {
-  const timeRecordsStrArray = inputStrings.filter((a: string) =>
-    a.includes("-"),
-  );
-  const timeRecordsObject = parseTimeRecordsFromTimestamps(timeRecordsStrArray);
-
-  const goalDirectives: string[] = inputStrings.filter((a: string) =>
-    a.startsWith("goal:"),
-  );
-  if (goalDirectives.length > 0) {
-    timeRecordsObject.goalMinutes = parseInt(
-      goalDirectives[0].substring(5).trim(),
-      10,
-    );
-  }
-  return timeRecordsObject;
+export function parseTimeRecords(inputStringsWithGoal: string[]): TimeRecords {
+  const [goal, inputStrings] = parseGoal(inputStringsWithGoal);
+  const [timeSlots, pending] = parseTimeSlots(inputStrings);
+  return new TimeRecords(timeSlots, pending, goal);
 }

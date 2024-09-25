@@ -121,7 +121,7 @@ export function timestampNowFormatted(): string {
   return formatTimestamp(timestampNow());
 }
 
-export function formatTime(timeInMinutes: number): string {
+export function formatDurationMinutes(timeInMinutes: number): string {
   const minutesPerHour = 60;
   if (timeInMinutes > minutesPerHour) {
     const hours = Math.floor(timeInMinutes / minutesPerHour);
@@ -138,7 +138,7 @@ export function formatTime(timeInMinutes: number): string {
 // If the end timestamp is not provided, the current time is used.
 export function formatTimeBetween(start: Timestamp, end?: Timestamp): string {
   const minutes = getMinutesBetween(start.date, end?.date ?? new Date());
-  return formatTime(Math.round(minutes));
+  return formatDurationMinutes(Math.round(minutes));
 }
 
 // It would be very nice if Logseq had a way to link to dates that did not depend on the user's preferred date format...
@@ -160,4 +160,22 @@ export async function currentJournalPageRef(): Promise<string> {
     return `[[${formatDate(date, preferredDateFormat)}]]`;
   };
   return dateReference(new Date(), preferredDateFormat);
+}
+
+export function parseDurationMinutes(input: string): number | undefined {
+  if (!input.trim().startsWith("goal:")) {
+    return undefined;
+  }
+  // Support durations in the format "Xd Xh Xm".
+  const match = input.match(
+    /^\s*goal:\s*(?:(\d+)d)?\s*(?:(\d+h))?\s*(?:(\d+m))?\s*$/,
+  );
+  if (!match || match.length === 1) {
+    throw `Invalid duration format: ${input}`;
+  }
+  const days = match[1] ? parseInt(match[1]) : 0;
+  const hours = match[2] ? parseInt(match[2]) : 0;
+  const minutes = match[3] ? parseInt(match[3]) : 0;
+  const minutesPerDay = 24 * 60;
+  return days * minutesPerDay + hours * 60 + minutes;
 }
