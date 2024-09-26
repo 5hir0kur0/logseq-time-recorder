@@ -1,4 +1,5 @@
-import { format } from "date-fns";
+import "@logseq/libs";
+import { formatDate } from "date-fns";
 import { getSettings } from "./settings";
 
 // Date format, e.g.: 2024-05-15T21:12
@@ -149,15 +150,15 @@ export async function currentJournalPageRef(): Promise<string> {
   // https://github.com/omnivore-app/logseq-omnivore/blob/1c5a965dba55b70ffbbb821eeab71f9f538958b0/src/util.ts
   const userConfigs = await logseq.App.getUserConfigs();
   const preferredDateFormat: string = userConfigs.preferredDateFormat;
-  const formatDate = (date: Date, preferredDateFormat: string): string => {
-    return format(date, preferredDateFormat, {
+  const formatJournalDate = (date: Date, preferredDateFormat: string): string => {
+    return formatDate(date, preferredDateFormat, {
       // Use YY and YYYY for the year instead of for week-numbering.
       useAdditionalDayOfYearTokens: true,
       useAdditionalWeekYearTokens: true,
     });
   };
   const dateReference = (date: Date, preferredDateFormat: string): string => {
-    return `[[${formatDate(date, preferredDateFormat)}]]`;
+    return `[[${formatJournalDate(date, preferredDateFormat)}]]`;
   };
   return dateReference(new Date(), preferredDateFormat);
 }
