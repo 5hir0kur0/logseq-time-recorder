@@ -143,6 +143,10 @@ function parseGoal(inputStrings: string[]): [number | undefined, string[]] {
     return [undefined, []];
   }
   const [goal, ...rest] = inputStrings;
+  const duration = parseDurationMinutes(goal);
+  if (duration === undefined) {
+    return [undefined, inputStrings];
+  }
   return [parseDurationMinutes(goal), rest];
 }
 

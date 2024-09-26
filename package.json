@@ -1,6 +1,6 @@
 {
     "name": "logseq-time-recorder",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "description": "A simple time recorder (punch clock) plugin for Logseq.",
     "author": "5hir0kur0",
     "license": "MIT",
